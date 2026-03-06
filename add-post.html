@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>განცხადების დამატება - Nexus.ge</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo" onclick="location.href='index.html'">NEXUS<span>.GE</span></div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="index.html">მთავარი</a></li>
+                <li><a href="workers.html">ხელოსნები</a></li>
+                <li><a href="add-post.html" class="add-btn">დამატება</a></li>
+            </ul>
+        </nav>
+        <div class="header-controls">
+            <button id="themeToggle">🌙</button>
+        </div>
+    </header>
+
+    <main class="main-layout">
+        <aside class="ad-sidebar"></aside>
+        <section class="content-center">
+            <div class="form-container">
+                <h2>განცხადების დამატება</h2>
+                <p class="form-subtitle">შეავსეთ ფორმა. დამტკიცების შემდეგ გამოჩნდება საიტზე.</p>
+
+                <div id="successMsg" class="success-msg" style="display:none;">
+                    ✅ თქვენი განცხადება გაგზავნილია! მოდერაციის შემდეგ გამოჩნდება.
+                </div>
+                <div id="errorMsg" class="error-msg" style="display:none;"></div>
+
+                <form id="workerForm" novalidate>
+                    <!-- ფოტო -->
+                    <div class="form-group">
+                        <label>ფოტო <small>(არასავალდებულო)</small></label>
+                        <div class="photo-upload" id="photoUploadArea">
+                            <img id="photoPreview" src="" alt="" style="display:none;">
+                            <div id="photoPlaceholder">
+                                <span style="font-size:36px;">📷</span>
+                                <p>დააჭირეთ ფოტოს ასატვირთად</p>
+                                <small>JPG, PNG — მაქს. 2MB</small>
+                            </div>
+                            <input type="file" id="wPhoto" accept="image/jpeg,image/png,image/webp" style="display:none;">
+                        </div>
+                        <button type="button" class="remove-photo-btn" id="removePhoto" style="display:none;">❌ ფოტოს წაშლა</button>
+                    </div>
+
+                    <!-- სახელი -->
+                    <div class="form-group">
+                        <label for="wName">სახელი და გვარი <span class="required">*</span></label>
+                        <input type="text" id="wName" placeholder="მაგ: გიორგი ბერიძე" required>
+                    </div>
+
+                    <!-- ტელეფონი -->
+                    <div class="form-group">
+                        <label for="wPhone">ტელეფონი <span class="required">*</span></label>
+                        <input type="tel" id="wPhone" placeholder="მაგ: 599 000 000" required>
+                    </div>
+
+                    <!-- პროფესიები -->
+                    <div class="form-group">
+                        <label>პროფესიები <span class="required">*</span> <small>(შეგიძლიათ რამდენიმე აირჩიოთ)</small></label>
+                        <div class="services-grid">
+                            <label class="service-item"><input type="checkbox" name="cat" value="სრული რემონტი"> 🏠 სრული რემონტი</label>
+                            <label class="service-item"><input type="checkbox" name="cat" value="ელექტროობა"> ⚡ ელექტროობა</label>
+                            <label class="service-item"><input type="checkbox" name="cat" value="სანტექნიკა"> 🚿 სანტექნიკა</label>
+                            <label class="service-item"><input type="checkbox" name="cat" value="გიფსოკარდონი"> 🧱 გიფსოკარდონი</label>
+                            <label class="service-item"><input type="checkbox" name="cat" value="კაფელი"> 📐 კაფელი</label>
+                            <label class="service-item"><input type="checkbox" name="cat" value="გათბობა"> 🌡️ გათბობა</label>
+                            <label class="service-item"><input type="checkbox" name="cat" value="მხატვრობა"> 🎨 მხატვრობა</label>
+                            <label class="service-item"><input type="checkbox" name="cat" value="კარ-ფანჯარა"> 🪟 კარ-ფანჯარა</label>
+                        </div>
+                    </div>
+
+                    <!-- ენები -->
+                    <div class="form-group">
+                        <label>რა ენებზე საუბრობთ?</label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" name="lang" value="GEO"> 🇬🇪 GEO</label>
+                            <label><input type="checkbox" name="lang" value="ENG"> 🇬🇧 ENG</label>
+                            <label><input type="checkbox" name="lang" value="RUS"> 🇷🇺 RUS</label>
+                        </div>
+                    </div>
+
+                    <!-- აღწერა -->
+                    <div class="form-group">
+                        <label for="wDesc">აღწერა <small>(არასავალდებულო)</small></label>
+                        <textarea id="wDesc" placeholder="მოკლედ აღწერეთ თქვენი გამოცდილება..."></textarea>
+                    </div>
+
+                    <button type="submit" class="add-btn submit-btn" id="submitBtn">
+                        <span id="submitText">გაგზავნა მოდერაციაზე</span>
+                        <span id="submitLoading" style="display:none;">⏳ იგზავნება...</span>
+                    </button>
+                </form>
+            </div>
+        </section>
+        <aside class="ad-sidebar"></aside>
+    </main>
+
+    <script type="module" src="js/add-post.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

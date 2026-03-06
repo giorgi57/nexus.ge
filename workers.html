@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ხელოსნები - Nexus.ge</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo" onclick="location.href='index.html'">NEXUS<span>.GE</span></div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="index.html">მთავარი</a></li>
+                <li><a href="workers.html">ხელოსნები</a></li>
+                <li><a href="add-post.html" class="add-btn">დამატება</a></li>
+            </ul>
+        </nav>
+        <div class="header-controls">
+            <button id="themeToggle">🌙</button>
+        </div>
+    </header>
+
+    <main class="main-layout">
+        <aside class="ad-sidebar">
+            <div class="ad-square">რეკლამა 1</div>
+            <div class="ad-square">რეკლამა 2</div>
+        </aside>
+        <section class="content-center">
+            <div class="workers-header">
+                <h2 id="pageTitle">ხელოსნების სია</h2>
+                <div class="filter-bar">
+                    <input type="text" id="workerSearch" placeholder="ძებნა სახელით...">
+                    <select id="catFilter">
+                        <option value="">ყველა კატეგორია</option>
+                        <option value="სრული რემონტი">🏠 სრული რემონტი</option>
+                        <option value="ელექტროობა">⚡ ელექტროობა</option>
+                        <option value="სანტექნიკა">🚿 სანტექნიკა</option>
+                        <option value="გიფსოკარდონი">🧱 გიფსოკარდონი</option>
+                        <option value="კაფელი">📐 კაფელი</option>
+                        <option value="გათბობა">🌡️ გათბობა</option>
+                        <option value="მხატვრობა">🎨 მხატვრობა</option>
+                        <option value="კარ-ფანჯარა">🪟 კარ-ფანჯარა</option>
+                    </select>
+                </div>
+            </div>
+            <div class="worker-grid" id="workerGrid">
+                <p class="loading-text">⏳ იტვირთება...</p>
+            </div>
+            <p id="noResults" style="display:none; text-align:center; color:#94a3b8; margin-top:40px;">❌ ხელოსანი ვერ მოიძებნა</p>
+        </section>
+        <aside class="ad-sidebar">
+            <div class="ad-square">რეკლამა 3</div>
+            <div class="ad-square">რეკლამა 4</div>
+        </aside>
+    </main>
+
+    <script type="module" src="js/workers.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
