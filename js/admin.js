@@ -161,4 +161,8 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.add('active');
         document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
     });
+<<<<<<< HEAD
 });
+=======
+});
+>>>>>>> 03b4ee4307475795e9b91dd40da78fc69152bed0
