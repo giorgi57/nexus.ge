@@ -3,8 +3,7 @@ import {
     signInWithEmailAndPassword, signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import {
-    collection, query, where, onSnapshot,
-    doc, updateDoc, deleteDoc, orderBy
+    collection, onSnapshot, doc, updateDoc, deleteDoc, query
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const loginScreen = document.getElementById('loginScreen');
@@ -15,19 +14,19 @@ const loginBtn    = document.getElementById('loginBtn');
 const loginError  = document.getElementById('loginError');
 const logoutBtn   = document.getElementById('logoutBtn');
 
-// ===== Auth State =====
+// ===== სისტემაში შესვლის შემოწმება =====
 onAuthStateChanged(auth, (user) => {
     if (user) {
         loginScreen.style.display = 'none';
         adminPanel.style.display  = 'block';
-        loadAll();
+        loadAllData();
     } else {
         loginScreen.style.display = 'flex';
         adminPanel.style.display  = 'none';
     }
 });
 
-// ===== Login =====
+// ===== ლოგინი =====
 loginBtn.addEventListener('click', async () => {
     const email = emailInput.value.trim();
     const pw    = pwInput.value;
@@ -45,46 +44,34 @@ loginBtn.addEventListener('click', async () => {
     }
 });
 
-pwInput.addEventListener('keydown', e => { if (e.key === 'Enter') loginBtn.click(); });
-emailInput.addEventListener('keydown', e => { if (e.key === 'Enter') pwInput.focus(); });
-
-// ===== Logout =====
+// ===== გამოსვლა =====
 logoutBtn.addEventListener('click', () => signOut(auth));
 
-// ===== Tabs =====
-document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-    });
-});
-
-// ===== Load all posts =====
-function loadAll() {
-    listenStatus('pending',  'pendingGrid',  (list) => {
-        document.getElementById('statPending').textContent  = list.length;
-        document.getElementById('badgePending').textContent = list.length;
-    });
-    listenStatus('approved', 'approvedGrid', (list) => {
-        document.getElementById('statApproved').textContent = list.length;
-    });
-    listenStatus('rejected', 'rejectedGrid', (list) => {
-        document.getElementById('statRejected').textContent = list.length;
-    });
-}
-
-function listenStatus(status, gridId, onUpdate) {
-    const q = query(
-        collection(db, 'workers'),
-        where('status', '==', status),
-        orderBy('createdAt', 'desc')
-    );
+// ===== მონაცემების წამოღება (ინდექსების გარეშე) =====
+function loadAllData() {
+    const q = query(collection(db, 'workers'));
+    
     onSnapshot(q, (snap) => {
-        const list = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        onUpdate(list);
-        renderGrid(list, gridId, status);
+        const allWorkers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+        // 1. Pending (მოლოდინში)
+        const pending = allWorkers.filter(w => w.status === 'pending');
+        renderGrid(pending, 'pendingGrid', 'pending');
+        document.getElementById('statPending').textContent = pending.length;
+        document.getElementById('badgePending').textContent = pending.length;
+
+        // 2. Approved (დამტკიცებული)
+        const approved = allWorkers.filter(w => w.status === 'approved');
+        renderGrid(approved, 'approvedGrid', 'approved');
+        document.getElementById('statApproved').textContent = approved.length;
+
+        // 3. Rejected (უარყოფილი)
+        const rejected = allWorkers.filter(w => w.status === 'rejected');
+        renderGrid(rejected, 'rejectedGrid', 'rejected');
+        document.getElementById('statRejected').textContent = rejected.length;
+    }, (error) => {
+        console.error("Firestore error:", error);
+        alert("ბაზიდან მონაცემების წამოღება ვერ მოხერხდა. ნახე Console.");
     });
 }
 
@@ -97,6 +84,9 @@ function renderGrid(list, gridId, status) {
         return;
     }
 
+    // დალაგება თარიღის მიხედვით (უახლესი ზემოთ)
+    list.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
     list.forEach(w => {
         const card  = document.createElement('div');
         card.className = 'admin-card';
@@ -106,9 +96,7 @@ function renderGrid(list, gridId, status) {
             : `<div class="admin-photo-placeholder">👤</div>`;
 
         const cats  = (w.cats  || []).join(', ');
-        const langs = (w.langs || []).join(' · ');
         const date  = w.createdAt ? new Date(w.createdAt.seconds * 1000).toLocaleDateString('ka-GE') : '';
-        const desc  = w.desc ? `<p class="admin-desc">"${w.desc}"</p>` : '';
 
         let actions = '';
         if (status === 'pending') {
@@ -135,8 +123,6 @@ function renderGrid(list, gridId, status) {
                     <h3>${w.name}</h3>
                     <p class="admin-cats">${cats}</p>
                     <p class="admin-phone">📞 ${w.phone}</p>
-                    ${langs ? `<p class="admin-langs">🗣 ${langs}</p>` : ''}
-                    ${desc}
                     <small class="admin-date">${date}</small>
                 </div>
             </div>
@@ -146,14 +132,33 @@ function renderGrid(list, gridId, status) {
     });
 }
 
+// ღილაკების ფუნქციები
 window.approveWorker = async (id) => {
-    await updateDoc(doc(db, 'workers', id), { status: 'approved' });
+    try {
+        await updateDoc(doc(db, 'workers', id), { status: 'approved' });
+    } catch (e) { alert("შეცდომა დამტკიცებისას"); }
 };
+
 window.rejectWorker = async (id) => {
-    await updateDoc(doc(db, 'workers', id), { status: 'rejected' });
+    try {
+        await updateDoc(doc(db, 'workers', id), { status: 'rejected' });
+    } catch (e) { alert("შეცდომა უარყოფისას"); }
 };
+
 window.deleteWorker = async (id) => {
-    if (confirm('დარწმუნებული ხართ?')) {
-        await deleteDoc(doc(db, 'workers', id));
+    if (confirm('ნამდვილად გსურთ წაშლა?')) {
+        try {
+            await deleteDoc(doc(db, 'workers', id));
+        } catch (e) { alert("შეცდომა წაშლისას"); }
     }
 };
+
+// ტაბების გადართვა
+document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    });
+});
