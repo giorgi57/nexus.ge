@@ -1,30 +1,25 @@
-import { db, storage } from './firebase-config.js';
+import { db } from './firebase-config.js';
 import {
     collection, addDoc, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import {
-    ref, uploadBytes, getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
-// ===== ფოტო ატვირთვის UI =====
-const photoArea     = document.getElementById('photoUploadArea');
-const photoInput    = document.getElementById('wPhoto');
-const photoPreview  = document.getElementById('photoPreview');
-const photoHolder   = document.getElementById('photoPlaceholder');
-const removeBtn     = document.getElementById('removePhoto');
+// ===== ფოტო preview (ლოკალური, Storage გარეშე) =====
+const photoArea    = document.getElementById('photoUploadArea');
+const photoInput   = document.getElementById('wPhoto');
+const photoPreview = document.getElementById('photoPreview');
+const photoHolder  = document.getElementById('photoPlaceholder');
+const removeBtn    = document.getElementById('removePhoto');
 
 photoArea.addEventListener('click', () => photoInput.click());
 
 photoInput.addEventListener('change', () => {
     const file = photoInput.files[0];
     if (!file) return;
-
     if (file.size > 2 * 1024 * 1024) {
-        showError('ფოტო 2MB-ზე მეტია. გთხოვთ პატარა ფოტო ატვირთოთ.');
+        showError('ფოტო 2MB-ზე მეტია.');
         photoInput.value = '';
         return;
     }
-
     const reader = new FileReader();
     reader.onload = (e) => {
         photoPreview.src = e.target.result;
@@ -60,38 +55,27 @@ form.addEventListener('submit', async (e) => {
     const cats  = [...document.querySelectorAll('input[name="cat"]:checked')].map(i => i.value);
     const langs = [...document.querySelectorAll('input[name="lang"]:checked')].map(i => i.value);
 
-    // ვალიდაცია
-    if (!name)         return showError('გთხოვთ შეიყვანოთ სახელი და გვარი');
-    if (!phone)        return showError('გთხოვთ შეიყვანოთ ტელეფონის ნომერი');
+    if (!name)             return showError('გთხოვთ შეიყვანოთ სახელი და გვარი');
+    if (!phone)            return showError('გთხოვთ შეიყვანოთ ტელეფონის ნომერი');
     if (cats.length === 0) return showError('გთხოვთ აირჩიოთ მინიმუმ ერთი პროფესია');
 
     setLoading(true);
 
     try {
-        let photoURL = '';
-
-        // ფოტოს ატვირთვა Storage-ში (თუ არჩეულია)
+        // ფოტო base64-ად ვინახავთ Firestore-ში (Storage გარეშე)
+        let photoData = '';
         const photoFile = photoInput.files[0];
         if (photoFile) {
-            const ext = photoFile.name.split('.').pop();
-            const storageRef = ref(storage, `worker-photos/${Date.now()}.${ext}`);
-            await uploadBytes(storageRef, photoFile);
-            photoURL = await getDownloadURL(storageRef);
+            photoData = await toBase64(photoFile);
         }
 
-        // Firestore-ში შენახვა
         await addDoc(collection(db, 'workers'), {
-            name,
-            phone,
-            cats,
-            langs,
-            desc,
-            photoURL,
-            status: 'pending',   // pending | approved | rejected
+            name, phone, cats, langs, desc,
+            photoURL: photoData,
+            status: 'pending',
             createdAt: serverTimestamp()
         });
 
-        // წარმატება
         form.reset();
         photoPreview.src = '';
         photoPreview.style.display = 'none';
@@ -108,6 +92,15 @@ form.addEventListener('submit', async (e) => {
         setLoading(false);
     }
 });
+
+function toBase64(file) {
+    return new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload  = () => res(r.result);
+        r.onerror = rej;
+        r.readAsDataURL(file);
+    });
+}
 
 function setLoading(on) {
     submitBtn.disabled = on;
