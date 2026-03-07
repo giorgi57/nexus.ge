@@ -114,7 +114,7 @@ function toBase64(file) {
         reader.onload = e => {
             const img = new Image();
             img.onload = () => {
-                const MAX = 800;
+                const MAX = 600;
                 let w = img.width, h = img.height;
                 if (w > MAX || h > MAX) {
                     if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
@@ -123,7 +123,7 @@ function toBase64(file) {
                 const canvas = document.createElement('canvas');
                 canvas.width = w; canvas.height = h;
                 canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-                res(canvas.toDataURL('image/jpeg', 0.75));
+                res(canvas.toDataURL('image/jpeg', 0.55));
             };
             img.src = e.target.result;
         };
