@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ხელოსნები - Nexus.ge</title>
     <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="navbar">
@@ -30,7 +31,10 @@
             <div class="workers-header">
                 <h2 id="pageTitle">ხელოსნების სია</h2>
                 <div class="filter-bar">
-                    <input type="text" id="workerSearch" placeholder="ძებნა სახელით...">
+                    <div class="search-wrap">
+                        <span>🔍</span>
+                        <input type="text" id="workerSearch" placeholder="ძებნა სახელით...">
+                    </div>
                     <select id="catFilter">
                         <option value="">ყველა კატეგორია</option>
                         <option value="სრული რემონტი">🏠 სრული რემონტი</option>
@@ -41,19 +45,31 @@
                         <option value="გათბობა">🌡️ გათბობა</option>
                         <option value="მხატვრობა">🎨 მხატვრობა</option>
                         <option value="კარ-ფანჯარა">🪟 კარ-ფანჯარა</option>
+                        <option value="ავეჯი">🪑 ავეჯი</option>
+                        <option value="სახურავი">🏗️ სახურავი</option>
                     </select>
                 </div>
             </div>
-            <div class="worker-grid" id="workerGrid">
-                <p class="loading-text">⏳ იტვირთება...</p>
+            <div class="worker-list" id="workerGrid">
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
             </div>
-            <p id="noResults" style="display:none; text-align:center; color:#94a3b8; margin-top:40px;">❌ ხელოსანი ვერ მოიძებნა</p>
+            <p id="noResults" style="display:none; text-align:center; color:#94a3b8; margin-top:60px; font-size:16px;">😕 ხელოსანი ვერ მოიძებნა</p>
         </section>
         <aside class="ad-sidebar">
             <div class="ad-square">რეკლამა 3</div>
             <div class="ad-square">რეკლამა 4</div>
         </aside>
     </main>
+
+    <!-- Modal -->
+    <div id="workerModal" class="modal-overlay" style="display:none;" onclick="closeModal(event)">
+        <div class="modal-box">
+            <button class="modal-close" onclick="document.getElementById('workerModal').style.display='none'">✕</button>
+            <div id="modalContent"></div>
+        </div>
+    </div>
 
     <script type="module" src="js/workers.js"></script>
     <script src="js/main.js"></script>

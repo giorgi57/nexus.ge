@@ -5,15 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>განცხადების დამატება - Nexus.ge</title>
     <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
     <header class="navbar">
         <div class="logo" onclick="location.href='index.html'">NEXUS<span>.GE</span></div>
         <nav>
             <ul class="nav-links">
-                <li><a href="index.html">მთავარი</a></li>
-                <li><a href="workers.html">ხელოსნები</a></li>
-                <li><a href="add-post.html" class="add-btn">დამატება</a></li>
+                <li><a href="./index.html">მთავარი</a></li>
+                <li><a href="./workers.html">ხელოსნები</a></li>
+                <li><a href="./add-post.html" class="add-btn">დამატება</a></li>
             </ul>
         </nav>
         <div class="header-controls">
@@ -21,88 +22,93 @@
         </div>
     </header>
 
-    <main class="main-layout">
-        <aside class="ad-sidebar"></aside>
-        <section class="content-center">
-            <div class="form-container">
-                <h2>განცხადების დამატება</h2>
-                <p class="form-subtitle">შეავსეთ ფორმა. დამტკიცების შემდეგ გამოჩნდება საიტზე.</p>
+    <main style="padding: 40px 5%; max-width: 720px; margin: 0 auto;">
 
-                <div id="successMsg" class="success-msg" style="display:none;">
-                    ✅ თქვენი განცხადება გაგზავნილია! მოდერაციის შემდეგ გამოჩნდება.
-                </div>
-                <div id="errorMsg" class="error-msg" style="display:none;"></div>
+        <div class="form-header">
+            <h1>განცხადების <span>დამატება</span></h1>
+            <p>შეავსეთ ფორმა — მოდერაციის შემდეგ გამოჩნდება საიტზე</p>
+        </div>
 
-                <form id="workerForm" novalidate>
-                    <!-- ფოტო -->
-                    <div class="form-group">
-                        <label>ფოტო <small>(არასავალდებულო)</small></label>
-                        <div class="photo-upload" id="photoUploadArea">
-                            <img id="photoPreview" src="" alt="" style="display:none;">
-                            <div id="photoPlaceholder">
-                                <span style="font-size:36px;">📷</span>
-                                <p>დააჭირეთ ფოტოს ასატვირთად</p>
-                                <small>JPG, PNG — მაქს. 2MB</small>
-                            </div>
-                            <input type="file" id="wPhoto" accept="image/jpeg,image/png,image/webp" style="display:none;">
-                        </div>
-                        <button type="button" class="remove-photo-btn" id="removePhoto" style="display:none;">❌ ფოტოს წაშლა</button>
-                    </div>
-
-                    <!-- სახელი -->
-                    <div class="form-group">
-                        <label for="wName">სახელი და გვარი <span class="required">*</span></label>
-                        <input type="text" id="wName" placeholder="მაგ: გიორგი ბერიძე" required>
-                    </div>
-
-                    <!-- ტელეფონი -->
-                    <div class="form-group">
-                        <label for="wPhone">ტელეფონი <span class="required">*</span></label>
-                        <input type="tel" id="wPhone" placeholder="მაგ: 599 000 000" required>
-                    </div>
-
-                    <!-- პროფესიები -->
-                    <div class="form-group">
-                        <label>პროფესიები <span class="required">*</span> <small>(შეგიძლიათ რამდენიმე აირჩიოთ)</small></label>
-                        <div class="services-grid">
-                            <label class="service-item"><input type="checkbox" name="cat" value="სრული რემონტი"> 🏠 სრული რემონტი</label>
-                            <label class="service-item"><input type="checkbox" name="cat" value="ელექტროობა"> ⚡ ელექტროობა</label>
-                            <label class="service-item"><input type="checkbox" name="cat" value="სანტექნიკა"> 🚿 სანტექნიკა</label>
-                            <label class="service-item"><input type="checkbox" name="cat" value="გიფსოკარდონი"> 🧱 გიფსოკარდონი</label>
-                            <label class="service-item"><input type="checkbox" name="cat" value="კაფელი"> 📐 კაფელი</label>
-                            <label class="service-item"><input type="checkbox" name="cat" value="გათბობა"> 🌡️ გათბობა</label>
-                            <label class="service-item"><input type="checkbox" name="cat" value="მხატვრობა"> 🎨 მხატვრობა</label>
-                            <label class="service-item"><input type="checkbox" name="cat" value="კარ-ფანჯარა"> 🪟 კარ-ფანჯარა</label>
-                        </div>
-                    </div>
-
-                    <!-- ენები -->
-                    <div class="form-group">
-                        <label>რა ენებზე საუბრობთ?</label>
-                        <div class="checkbox-group">
-                            <label><input type="checkbox" name="lang" value="GEO"> 🇬🇪 GEO</label>
-                            <label><input type="checkbox" name="lang" value="ENG"> 🇬🇧 ENG</label>
-                            <label><input type="checkbox" name="lang" value="RUS"> 🇷🇺 RUS</label>
-                        </div>
-                    </div>
-
-                    <!-- აღწერა -->
-                    <div class="form-group">
-                        <label for="wDesc">აღწერა <small>(არასავალდებულო)</small></label>
-                        <textarea id="wDesc" placeholder="მოკლედ აღწერეთ თქვენი გამოცდილება..."></textarea>
-                    </div>
-
-                    <button type="submit" class="add-btn submit-btn" id="submitBtn">
-                        <span id="submitText">გაგზავნა მოდერაციაზე</span>
-                        <span id="submitLoading" style="display:none;">⏳ იგზავნება...</span>
-                    </button>
-                </form>
+        <div id="successMsg" class="success-banner" style="display:none;">
+            <span>🎉</span>
+            <div>
+                <strong>განცხადება გაგზავნილია!</strong>
+                <p>მოდერაციის შემდეგ გამოჩნდება ხელოსნების სიაში</p>
             </div>
-        </section>
-        <aside class="ad-sidebar"></aside>
+        </div>
+        <div id="errorMsg" class="error-banner" style="display:none;"></div>
+
+        <form id="workerForm" class="post-form" novalidate>
+
+            <!-- ფოტო -->
+            <div class="form-section">
+                <div class="section-label">📷 ფოტო <span class="optional">არასავალდებულო</span></div>
+                <div class="photo-drop" id="photoUploadArea">
+                    <img id="photoPreview" src="" alt="" style="display:none;">
+                    <div id="photoPlaceholder" class="photo-placeholder-inner">
+                        <div class="photo-icon-wrap">📷</div>
+                        <p>დააჭირეთ ან გადმოიტანეთ ფოტო</p>
+                        <small>JPG, PNG — მაქს. 1.5MB</small>
+                    </div>
+                    <input type="file" id="wPhoto" accept="image/jpeg,image/png,image/webp" style="display:none;">
+                </div>
+                <button type="button" id="removePhoto" class="remove-btn" style="display:none;">✕ ფოტოს წაშლა</button>
+            </div>
+
+            <!-- სახელი + ტელეფონი -->
+            <div class="form-row">
+                <div class="form-field">
+                    <label for="wName">სახელი და გვარი <span class="req">*</span></label>
+                    <input type="text" id="wName" placeholder="მაგ: გიორგი ბერიძე" autocomplete="name">
+                </div>
+                <div class="form-field">
+                    <label for="wPhone">ტელეფონი <span class="req">*</span></label>
+                    <input type="tel" id="wPhone" placeholder="5XX XXX XXX">
+                </div>
+            </div>
+
+            <!-- პროფესიები -->
+            <div class="form-section">
+                <div class="section-label">🔧 პროფესიები <span class="req">*</span> <span class="optional">შეგიძლიათ რამდენიმე</span></div>
+                <div class="services-grid">
+                    <label class="service-chip"><input type="checkbox" name="cat" value="სრული რემონტი"><span>🏠 სრული რემონტი</span></label>
+                    <label class="service-chip"><input type="checkbox" name="cat" value="ელექტროობა"><span>⚡ ელექტროობა</span></label>
+                    <label class="service-chip"><input type="checkbox" name="cat" value="სანტექნიკა"><span>🚿 სანტექნიკა</span></label>
+                    <label class="service-chip"><input type="checkbox" name="cat" value="გიფსოკარდონი"><span>🧱 გიფსოკარდონი</span></label>
+                    <label class="service-chip"><input type="checkbox" name="cat" value="კაფელი"><span>📐 კაფელი</span></label>
+                    <label class="service-chip"><input type="checkbox" name="cat" value="გათბობა"><span>🌡️ გათბობა</span></label>
+                    <label class="service-chip"><input type="checkbox" name="cat" value="მხატვრობა"><span>🎨 მხატვრობა</span></label>
+                    <label class="service-chip"><input type="checkbox" name="cat" value="კარ-ფანჯარა"><span>🪟 კარ-ფანჯარა</span></label>
+                    <label class="service-chip"><input type="checkbox" name="cat" value="ავეჯი"><span>🪑 ავეჯი</span></label>
+                    <label class="service-chip"><input type="checkbox" name="cat" value="სახურავი"><span>🏗️ სახურავი</span></label>
+                </div>
+            </div>
+
+            <!-- ენები -->
+            <div class="form-section">
+                <div class="section-label">🗣️ ენები</div>
+                <div class="langs-row">
+                    <label class="lang-chip"><input type="checkbox" name="lang" value="GEO"><span>🇬🇪 ქართული</span></label>
+                    <label class="lang-chip"><input type="checkbox" name="lang" value="ENG"><span>🇬🇧 ინგლისური</span></label>
+                    <label class="lang-chip"><input type="checkbox" name="lang" value="RUS"><span>🇷🇺 რუსული</span></label>
+                </div>
+            </div>
+
+            <!-- აღწერა -->
+            <div class="form-section">
+                <div class="section-label">📝 აღწერა <span class="optional">არასავალდებულო</span></div>
+                <textarea id="wDesc" placeholder="მოყვეთ თქვენი გამოცდილების შესახებ, სამუშაო სტაჟი, შესრულებული პროექტები..."></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                <span id="submitText">✉️ გაგზავნა მოდერაციაზე</span>
+                <span id="submitLoad" style="display:none;">⏳ იგზავნება...</span>
+            </button>
+
+        </form>
     </main>
 
-    <script type="module" src="js/add-post.js"></script>
-    <script src="js/main.js"></script>
+    <script type="module" src="./js/add-post.js"></script>
+    <script src="./js/main.js"></script>
 </body>
 </html>

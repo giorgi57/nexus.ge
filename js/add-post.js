@@ -1,36 +1,51 @@
 import { db } from './firebase-config.js';
-import {
-    collection, addDoc, serverTimestamp
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// ===== ფოტო preview (ლოკალური, Storage გარეშე) =====
 const photoArea    = document.getElementById('photoUploadArea');
 const photoInput   = document.getElementById('wPhoto');
 const photoPreview = document.getElementById('photoPreview');
 const photoHolder  = document.getElementById('photoPlaceholder');
 const removeBtn    = document.getElementById('removePhoto');
 
+// ფოტო არჩევა
 photoArea.addEventListener('click', () => photoInput.click());
 
 photoInput.addEventListener('change', () => {
     const file = photoInput.files[0];
     if (!file) return;
-    if (file.size > 2 * 1024 * 1024) {
-        showError('ფოტო 2MB-ზე მეტია.');
+
+    if (file.size > 1.5 * 1024 * 1024) {
+        showError('ფოტო 1.5MB-ზე მეტია — გთხოვთ პატარა ფოტო ატვირთოთ.');
         photoInput.value = '';
         return;
     }
+
     const reader = new FileReader();
-    reader.onload = (e) => {
+    reader.onload = e => {
         photoPreview.src = e.target.result;
         photoPreview.style.display = 'block';
         photoHolder.style.display = 'none';
-        removeBtn.style.display = 'inline-block';
+        removeBtn.style.display = 'inline-flex';
     };
     reader.readAsDataURL(file);
 });
 
-removeBtn.addEventListener('click', (e) => {
+// drag & drop
+photoArea.addEventListener('dragover', e => { e.preventDefault(); photoArea.classList.add('drag-over'); });
+photoArea.addEventListener('dragleave', () => photoArea.classList.remove('drag-over'));
+photoArea.addEventListener('drop', e => {
+    e.preventDefault();
+    photoArea.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        photoInput.files = dt.files;
+        photoInput.dispatchEvent(new Event('change'));
+    }
+});
+
+removeBtn.addEventListener('click', e => {
     e.stopPropagation();
     photoInput.value = '';
     photoPreview.src = '';
@@ -39,13 +54,13 @@ removeBtn.addEventListener('click', (e) => {
     removeBtn.style.display = 'none';
 });
 
-// ===== ფორმის გაგზავნა =====
+// ფორმის გაგზავნა
 const form       = document.getElementById('workerForm');
 const submitBtn  = document.getElementById('submitBtn');
 const submitText = document.getElementById('submitText');
-const submitLoad = document.getElementById('submitLoading');
+const submitLoad = document.getElementById('submitLoad');
 
-form.addEventListener('submit', async (e) => {
+form.addEventListener('submit', async e => {
     e.preventDefault();
     hideMessages();
 
@@ -62,16 +77,15 @@ form.addEventListener('submit', async (e) => {
     setLoading(true);
 
     try {
-        // ფოტო base64-ად ვინახავთ Firestore-ში (Storage გარეშე)
+        // ფოტო base64-ად ვინახავთ პირდაპირ Firestore-ში
         let photoData = '';
-        const photoFile = photoInput.files[0];
-        if (photoFile) {
-            photoData = await toBase64(photoFile);
+        if (photoInput.files[0]) {
+            photoData = await toBase64(photoInput.files[0]);
         }
 
         await addDoc(collection(db, 'workers'), {
             name, phone, cats, langs, desc,
-            photoURL: photoData,
+            photo: photoData,
             status: 'pending',
             createdAt: serverTimestamp()
         });
@@ -82,12 +96,12 @@ form.addEventListener('submit', async (e) => {
         photoHolder.style.display = 'flex';
         removeBtn.style.display = 'none';
 
-        document.getElementById('successMsg').style.display = 'block';
+        document.getElementById('successMsg').style.display = 'flex';
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
     } catch (err) {
         console.error(err);
-        showError('შეცდომა გაგზავნისას. სცადეთ თავიდან.');
+        showError('შეცდომა გაგზავნისას: ' + err.message);
     } finally {
         setLoading(false);
     }
@@ -107,15 +121,13 @@ function setLoading(on) {
     submitText.style.display = on ? 'none' : 'inline';
     submitLoad.style.display = on ? 'inline' : 'none';
 }
-
 function showError(msg) {
     const el = document.getElementById('errorMsg');
     el.textContent = '❌ ' + msg;
-    el.style.display = 'block';
+    el.style.display = 'flex';
     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
-
 function hideMessages() {
     document.getElementById('successMsg').style.display = 'none';
-    document.getElementById('errorMsg').style.display = 'none';
+    document.getElementById('errorMsg').style.display   = 'none';
 }
