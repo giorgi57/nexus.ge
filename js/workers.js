@@ -1,19 +1,30 @@
 import { db } from './firebase-config.js';
-import { collection, getDocs, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const workerGrid   = document.getElementById('workerGrid');
 const noResults    = document.getElementById('noResults');
 const workerSearch = document.getElementById('workerSearch');
 const catFilter    = document.getElementById('catFilter');
+const cityFilter   = document.getElementById('cityFilter');
 
 let allWorkers = [];
+let mobileAds  = [];
 
-// URL კატეგორია
 const urlCat = new URLSearchParams(window.location.search).get('cat');
 if (urlCat && catFilter) catFilter.value = urlCat;
 
+async function loadAds() {
+    try {
+        const snap = await getDocs(query(collection(db, 'ads'), where('active', '==', true)));
+        mobileAds = snap.docs
+            .map(d => d.data())
+            .filter(a => a.position === 'mobile' || a.position === 'both');
+    } catch(e) { mobileAds = []; }
+}
+
 async function loadWorkers() {
     try {
+        await loadAds();
         const q = query(collection(db, 'workers'), where('status', '==', 'approved'));
         const snap = await getDocs(q);
         allWorkers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -28,17 +39,35 @@ async function loadWorkers() {
 function renderWorkers() {
     const search = workerSearch?.value.trim().toLowerCase() || '';
     const cat    = catFilter?.value || '';
+    const city   = cityFilter?.value || '';
 
     const filtered = allWorkers.filter(w => {
         const matchName = w.name?.toLowerCase().includes(search);
-        const matchCat  = cat ? (w.cats || []).includes(cat) : true;
-        return matchName && matchCat;
+        const matchCat  = cat  ? (w.cats || []).includes(cat) : true;
+        const matchCity = city ? w.city === city : true;
+        return matchName && matchCat && matchCity;
     });
 
     workerGrid.innerHTML = '';
     noResults.style.display = filtered.length === 0 ? 'block' : 'none';
 
     filtered.forEach((w, i) => {
+        // ყოველი 4 ხელოსნის შემდეგ რეკლამა (მობილურზე)
+        if (i > 0 && i % 4 === 0 && mobileAds.length > 0) {
+            const adData = mobileAds[(i / 4 - 1) % mobileAds.length];
+            const ad = document.createElement('div');
+            ad.className = 'ad-banner mobile-only';
+            ad.innerHTML = adData.link
+                ? `<a href="${adData.link}" target="_blank"><img src="${adData.photo}" alt="${adData.name}" style="width:100%;height:80px;object-fit:cover;border-radius:10px;"></a>`
+                : `<img src="${adData.photo}" alt="${adData.name}" style="width:100%;height:80px;object-fit:cover;border-radius:10px;">`;
+            workerGrid.appendChild(ad);
+        } else if (i > 0 && i % 4 === 0) {
+            const ad = document.createElement('div');
+            ad.className = 'ad-banner mobile-only';
+            ad.textContent = 'რეკლამა';
+            workerGrid.appendChild(ad);
+        }
+
         const card = document.createElement('div');
         card.className = 'worker-row';
         card.style.animationDelay = `${i * 0.05}s`;
@@ -57,6 +86,7 @@ function renderWorkers() {
                 <div class="worker-row-info">
                     <h3>${w.name}</h3>
                     <div class="worker-row-cats">${cats}</div>
+                    ${w.city  ? `<p class="worker-row-langs">📍 ${w.city}</p>` : ''}
                     ${langs ? `<p class="worker-row-langs">🗣 ${langs}</p>` : ''}
                 </div>
             </div>
@@ -83,6 +113,7 @@ window.openWorker = function(id) {
         <div class="modal-body">
             <h2 class="modal-name">${w.name}</h2>
             <div class="modal-tags">${cats}</div>
+            ${w.city  ? `<p class="modal-langs">📍 ${w.city}</p>` : ''}
             ${langs ? `<p class="modal-langs">🗣 ${langs}</p>` : ''}
             ${w.desc ? `<p class="modal-desc">${w.desc}</p>` : ''}
             <a href="tel:${w.phone}" class="modal-call-btn">📞 ${w.phone}</a>
@@ -108,5 +139,6 @@ document.addEventListener('keydown', e => {
 
 if (workerSearch) workerSearch.addEventListener('input', renderWorkers);
 if (catFilter)    catFilter.addEventListener('change', renderWorkers);
+if (cityFilter)   cityFilter.addEventListener('change', renderWorkers);
 
 loadWorkers();

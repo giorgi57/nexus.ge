@@ -66,12 +66,14 @@ form.addEventListener('submit', async e => {
 
     const name  = document.getElementById('wName').value.trim();
     const phone = document.getElementById('wPhone').value.trim();
+    const city  = document.getElementById('wCity').value;
     const desc  = document.getElementById('wDesc').value.trim();
     const cats  = [...document.querySelectorAll('input[name="cat"]:checked')].map(i => i.value);
     const langs = [...document.querySelectorAll('input[name="lang"]:checked')].map(i => i.value);
 
     if (!name)             return showError('გთხოვთ შეიყვანოთ სახელი და გვარი');
     if (!phone)            return showError('გთხოვთ შეიყვანოთ ტელეფონის ნომერი');
+    if (!city)             return showError('გთხოვთ აირჩიოთ ქალაქი');
     if (cats.length === 0) return showError('გთხოვთ აირჩიოთ მინიმუმ ერთი პროფესია');
 
     setLoading(true);
@@ -84,7 +86,7 @@ form.addEventListener('submit', async e => {
         }
 
         await addDoc(collection(db, 'workers'), {
-            name, phone, cats, langs, desc,
+            name, phone, city, cats, langs, desc,
             photo: photoData,
             status: 'pending',
             createdAt: serverTimestamp()

@@ -57,6 +57,7 @@
                 <button class="tab-btn active" data-tab="pending">⏳ მოლოდინში <span class="badge" id="badgePending">0</span></button>
                 <button class="tab-btn" data-tab="approved">✅ დამტკიცებული</button>
                 <button class="tab-btn" data-tab="rejected">❌ უარყოფილი</button>
+                <button class="tab-btn" data-tab="ads">📢 რეკლამები</button>
             </div>
 
             <!-- Content -->
@@ -64,6 +65,46 @@
                 <div id="tab-pending"  class="tab-panel active"><div class="posts-grid" id="pendingGrid"><p class="loading-text">⏳ იტვირთება...</p></div></div>
                 <div id="tab-approved" class="tab-panel"><div class="posts-grid" id="approvedGrid"><p class="loading-text">⏳ იტვირთება...</p></div></div>
                 <div id="tab-rejected" class="tab-panel"><div class="posts-grid" id="rejectedGrid"><p class="loading-text">⏳ იტვირთება...</p></div></div>
+
+                <!-- რეკლამების tab -->
+                <div id="tab-ads" class="tab-panel">
+                    <div class="ad-upload-box">
+                        <h3>📢 ახალი რეკლამის დამატება</h3>
+
+                        <div class="ad-form-row">
+                            <div class="ad-photo-drop" id="adPhotoArea">
+                                <img id="adPreview" src="" style="display:none; width:100%; border-radius:10px;">
+                                <div id="adPlaceholder">
+                                    <div style="font-size:32px;">🖼️</div>
+                                    <p>ბანერის სურათი</p>
+                                    <small>JPG, PNG — მაქს. 1.5MB</small>
+                                </div>
+                                <input type="file" id="adPhoto" accept="image/*" style="display:none;">
+                            </div>
+                            <div class="ad-fields">
+                                <label>დამკვეთის სახელი</label>
+                                <input type="text" id="adName" placeholder="მაგ: ABC კომპანია">
+                                <label>ლინკი (URL)</label>
+                                <input type="url" id="adLink" placeholder="https://...">
+                                <label>პოზიცია</label>
+                                <select id="adPosition">
+                                    <option value="sidebar">გვერდი (sidebar)</option>
+                                    <option value="mobile">მობილური (ხელოსნებს შორის)</option>
+                                    <option value="both">ორივე</option>
+                                </select>
+                                <button class="add-btn" id="adSubmitBtn" style="width:100%; margin-top:8px;">
+                                    <span id="adSubmitText">✚ დამატება</span>
+                                    <span id="adSubmitLoad" style="display:none;">⏳...</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 style="margin-bottom:16px; font-size:16px;">არსებული რეკლამები</h3>
+                    <div class="ads-grid" id="adsGrid">
+                        <p class="loading-text">⏳ იტვირთება...</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
