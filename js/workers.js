@@ -114,7 +114,7 @@ window.openWorker = function(id) {
             <h2 class="modal-name">${w.name}</h2>
             <div class="modal-tags">${cats}</div>
             ${w.city  ? `<p class="modal-langs">📍 ${w.city}</p>` : ''}
-            ${langs ? `<p class="modal-langs">🗣 ${langs}</p>` : ''}
+            ${langs   ? `<p class="modal-langs">🗣 ${langs}</p>`  : ''}
             ${w.desc ? `<p class="modal-desc">${w.desc}</p>` : ''}
             <a href="tel:${w.phone}" class="modal-call-btn">📞 ${w.phone}</a>
         </div>
